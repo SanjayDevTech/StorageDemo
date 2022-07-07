@@ -1,6 +1,5 @@
 package com.example.storagedemo
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -61,11 +60,15 @@ class ListActivity : ComponentActivity() {
                 ) { paddingValues ->
                     LazyColumn(modifier = Modifier.padding(paddingValues)) {
                         item {
-                            Row(modifier = Modifier.horizontalScroll(rememberScrollState()).padding(4.dp)) {
+                            Row(
+                                modifier = Modifier
+                                    .horizontalScroll(rememberScrollState())
+                                    .padding(4.dp)
+                            ) {
                                 Text(text = currentFile.path)
                             }
                         }
-                        items(files, key = {it.path}) { file ->
+                        items(files, key = { it.path }) { file ->
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
