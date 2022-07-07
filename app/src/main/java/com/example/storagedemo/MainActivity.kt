@@ -36,14 +36,13 @@ class MainActivity : ComponentActivity() {
 
 fun Context.writeToFile(filename: String, contents: String) {
     val file =
-        File(applicationContext.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS), filename)
-    println(file.path)
+        File(applicationContext.getExternalFilesDir("Folder"), filename)
     file.writeText(contents)
 }
 
 fun Context.readFromFile(filename: String): String {
     val file =
-        File(applicationContext.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS), filename)
+        File(applicationContext.getExternalFilesDir("Folder"), filename)
     return file.readText()
 }
 
