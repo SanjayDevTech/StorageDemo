@@ -2,7 +2,6 @@ package com.example.storagedemo
 
 import android.content.Context
 import android.os.Bundle
-import android.os.Environment
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -36,14 +35,21 @@ class MainActivity : ComponentActivity() {
 
 fun Context.writeToFile(filename: String, contents: String) {
     val file =
-        File(applicationContext.getExternalFilesDir("Folder"), filename)
+        File(applicationContext.filesDir + "Folder", filename)
     file.writeText(contents)
 }
 
 fun Context.readFromFile(filename: String): String {
     val file =
-        File(applicationContext.getExternalFilesDir("Folder"), filename)
+        File(applicationContext.filesDir + "Folder", filename)
     return file.readText()
+}
+
+private operator fun File.plus(other: String): File {
+
+    return File(this, other).apply {
+        if (!exists()) mkdir()
+    }
 }
 
 @Composable
