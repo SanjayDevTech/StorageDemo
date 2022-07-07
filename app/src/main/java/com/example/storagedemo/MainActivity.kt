@@ -1,6 +1,7 @@
 package com.example.storagedemo
 
 import android.content.Context
+import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.widget.Toast
@@ -8,17 +9,13 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Button
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.documentfile.provider.DocumentFile
 import com.example.storagedemo.ui.theme.StorageDemoTheme
 import kotlinx.coroutines.Dispatchers
@@ -26,12 +23,37 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class MainActivity : ComponentActivity() {
+    @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
+            val ctx = LocalContext.current
             StorageDemoTheme {
-                Surface {
-                    MainScreen()
+                var fileUri: Uri? = null
+                Scaffold(
+                    topBar = {
+                        SmallTopAppBar(
+                            title = {
+                                Text(text = "Storage Demo")
+                            },
+                            actions = {
+                                IconButton(onClick = {
+                                    val intent = Intent(ctx, ListActivity::class.java)
+                                    intent.putExtra("file_uri", fileUri)
+                                    ctx.startActivity(intent)
+                                }) {
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.ic_baseline_view_list_24),
+                                        contentDescription = "List Files"
+                                    )
+                                }
+                            }
+                        )
+                    }
+                ) { paddingValues ->
+                    MainScreen(paddingValues) {
+                        fileUri = it
+                    }
                 }
             }
         }
@@ -39,7 +61,7 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun MainScreen() {
+fun MainScreen(paddingValues: PaddingValues = PaddingValues(), onResult: (Uri?) -> Unit) {
     var result by remember {
         mutableStateOf<Uri?>(null)
     }
@@ -47,7 +69,14 @@ fun MainScreen() {
     val launcher = rememberLauncherForActivityResult(
         ActivityResultContracts.OpenDocumentTree()
     ) {
+        it?.let {
+            context.contentResolver.takePersistableUriPermission(
+                it, Intent.FLAG_GRANT_READ_URI_PERMISSION
+                        or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+            )
+        }
         result = it
+        onResult(it)
     }
     var contents by remember {
         mutableStateOf(
@@ -62,7 +91,9 @@ fun MainScreen() {
         mutableStateOf("hello.txt")
     }
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .padding(paddingValues)
+            .fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
