@@ -7,9 +7,7 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -37,7 +35,7 @@ class MainActivity : ComponentActivity() {
                             actions = {
                                 IconButton(onClick = {
                                     val intent = Intent(ctx, ListActivity::class.java)
-                                    intent.putExtra("file_path", "")
+                                    intent.putExtra("file_path", applicationContext.filesDir.path)
                                     ctx.startActivity(intent)
                                 }) {
                                     Icon(
@@ -49,7 +47,7 @@ class MainActivity : ComponentActivity() {
                         )
                     }
                 ) {
-                    MainScreen()
+                    MainScreen(it)
                 }
             }
         }
@@ -76,7 +74,7 @@ private operator fun File.plus(other: String): File {
 }
 
 @Composable
-fun MainScreen() {
+fun MainScreen(paddingValues: PaddingValues) {
     var contents by remember {
         mutableStateOf(
             """
@@ -90,7 +88,7 @@ fun MainScreen() {
     }
     val context = LocalContext.current
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.padding(paddingValues).fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
