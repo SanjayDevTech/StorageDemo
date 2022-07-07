@@ -1,33 +1,52 @@
 package com.example.storagedemo
 
+import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
-import android.os.Environment
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Button
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.storagedemo.ui.theme.StorageDemoTheme
 import java.io.File
 
 class MainActivity : ComponentActivity() {
+    @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
+            val ctx = LocalContext.current
             StorageDemoTheme {
-                Surface {
-                    MainScreen()
+                Scaffold(
+                    topBar = {
+                        SmallTopAppBar(
+                            title = {
+                                Text(text = "Storage Demo")
+                            },
+                            actions = {
+                                IconButton(onClick = {
+                                    val intent = Intent(ctx, ListActivity::class.java)
+                                    intent.putExtra("file_path", applicationContext.getExternalFilesDir("")?.path)
+                                    ctx.startActivity(intent)
+                                }) {
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.ic_baseline_view_list_24),
+                                        contentDescription = "List Files"
+                                    )
+                                }
+                            }
+                        )
+                    }
+                ) {
+                    MainScreen(it)
                 }
             }
         }
@@ -47,7 +66,7 @@ fun Context.readFromFile(filename: String): String {
 }
 
 @Composable
-fun MainScreen() {
+fun MainScreen(paddingValues: PaddingValues = PaddingValues()) {
     var contents by remember {
         mutableStateOf(
             """
@@ -61,7 +80,7 @@ fun MainScreen() {
     }
     val context = LocalContext.current
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.padding(paddingValues).fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
