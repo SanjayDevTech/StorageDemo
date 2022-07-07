@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Button
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.*
@@ -25,20 +26,24 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             StorageDemoTheme {
-                MainScreen()
+                Surface {
+                    MainScreen()
+                }
             }
         }
     }
 }
 
 fun Context.writeToFile(filename: String, contents: String) {
-    val file = File(applicationContext.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS), filename)
+    val file =
+        File(applicationContext.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS), filename)
     println(file.path)
     file.writeText(contents)
 }
 
 fun Context.readFromFile(filename: String): String {
-    val file = File(applicationContext.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS), filename)
+    val file =
+        File(applicationContext.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS), filename)
     return file.readText()
 }
 
@@ -80,8 +85,8 @@ fun MainScreen() {
         )
         Button(onClick = {
             try {
-                    context.writeToFile(filename, contents)
-                    Toast.makeText(context, "Written to file $filename", Toast.LENGTH_SHORT).show()
+                context.writeToFile(filename, contents)
+                Toast.makeText(context, "Written to file $filename", Toast.LENGTH_SHORT).show()
             } catch (e: Exception) {
                 Toast.makeText(context, "Exception: ${e.message}", Toast.LENGTH_SHORT).show()
             }
