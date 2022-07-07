@@ -35,40 +35,6 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-suspend fun Context.writeToFile(uri: Uri, filename: String, contents: String) {
-    val documentTree = DocumentFile.fromTreeUri(this, uri) ?: run {
-        throw Exception("Cannot get tree")
-    }
-    val documentFile =
-        documentTree.findFile(filename) ?: documentTree.createFile("plain/text", filename) ?: run {
-            throw Exception("Cannot create file")
-        }
-    withContext(Dispatchers.IO) {
-        contentResolver.openOutputStream(documentFile.uri, "wt")?.use { outputStream ->
-            outputStream.bufferedWriter().use {
-                it.write(contents)
-            }
-        }
-    }
-}
-
-suspend fun Context.readFromFile(uri: Uri, filename: String): String {
-    val documentTree = DocumentFile.fromTreeUri(this, uri) ?: run {
-        throw Exception("Cannot get tree")
-    }
-    val documentFile =
-        documentTree.findFile(filename) ?: documentTree.createFile("plain/text", filename) ?: run {
-            throw Exception("Cannot create file")
-        }
-    return withContext(Dispatchers.IO) {
-        contentResolver.openInputStream(documentFile.uri)?.use { inputStream ->
-            inputStream.bufferedReader().use {
-                it.readLines().joinToString("\n")
-            }
-        } ?: ""
-    }
-}
-
 @Composable
 fun MainScreen() {
     var result by remember {
@@ -158,7 +124,41 @@ fun MainScreen() {
         Button(onClick = {
             launcher.launch(result)
         }) {
-            Text(text = "Select Folder")
+            Text(text = if (result == null) "Select Folder" else "Folder: ${result!!.path}")
         }
+    }
+}
+
+suspend fun Context.writeToFile(uri: Uri, filename: String, contents: String) {
+    val documentTree = DocumentFile.fromTreeUri(this, uri) ?: run {
+        throw Exception("Cannot get tree")
+    }
+    val documentFile =
+        documentTree.findFile(filename) ?: documentTree.createFile("plain/text", filename) ?: run {
+            throw Exception("Cannot create file")
+        }
+    withContext(Dispatchers.IO) {
+        contentResolver.openOutputStream(documentFile.uri, "wt")?.use { outputStream ->
+            outputStream.bufferedWriter().use {
+                it.write(contents)
+            }
+        }
+    }
+}
+
+suspend fun Context.readFromFile(uri: Uri, filename: String): String {
+    val documentTree = DocumentFile.fromTreeUri(this, uri) ?: run {
+        throw Exception("Cannot get tree")
+    }
+    val documentFile =
+        documentTree.findFile(filename) ?: documentTree.createFile("plain/text", filename) ?: run {
+            throw Exception("Cannot create file")
+        }
+    return withContext(Dispatchers.IO) {
+        contentResolver.openInputStream(documentFile.uri)?.use { inputStream ->
+            inputStream.bufferedReader().use {
+                it.readLines().joinToString("\n")
+            }
+        } ?: ""
     }
 }
