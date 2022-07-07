@@ -74,7 +74,7 @@ private operator fun File.plus(other: String): File {
 }
 
 @Composable
-fun MainScreen(paddingValues: PaddingValues) {
+fun MainScreen(paddingValues: PaddingValues = PaddingValues()) {
     var contents by remember {
         mutableStateOf(
             """
